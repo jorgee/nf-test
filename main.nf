@@ -4,7 +4,7 @@ process Dummy {
     debug true
 
     script:
-    "echo 'Hello world!'"
+    "fifo_race.sh"
 }
 
 workflow {
