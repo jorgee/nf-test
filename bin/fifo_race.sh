@@ -20,6 +20,7 @@ start_cpu_stress() {
         stress --cpu 1 &
         CPU_PIDS+=($!)
     done
+    sleep 1
 }
 
 # Function to stop CPU stress processes
