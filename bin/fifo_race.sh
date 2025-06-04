@@ -15,11 +15,8 @@ echo "Will stress $NUM_CPUS CPUs during the test"
 # Function to start CPU stress processes
 start_cpu_stress() {
     echo "Starting CPU stress on $NUM_CPUS CPUs..."
-
-    for i in $(seq 1 $NUM_CPUS); do
-        stress --cpu 1 &
-        CPU_PIDS+=($!)
-    done
+    stress --cpu $NUM_CPUS &
+    CPU_PIDS+=($!)
     sleep 1
 }
 
