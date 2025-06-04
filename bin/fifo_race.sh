@@ -15,6 +15,8 @@ echo "Will stress $NUM_CPUS CPUs during the test"
 # Function to start CPU stress processes
 start_cpu_stress() {
     echo "Starting CPU stress on $NUM_CPUS CPUs..."
+
+    stress --cpu $NUM_CPUS &
     
     # # Method 1: Using 'yes' (most portable)
     # for i in $(seq 1 $NUM_CPUS); do
@@ -23,11 +25,11 @@ start_cpu_stress() {
     #     echo "  Started CPU stress process $i (PID: ${CPU_PIDS[-1]})"
     # done
     
-    # Alternative method 2: Using bash arithmetic loops (uncomment if 'yes' not available)
-    for i in $(seq 1 $NUM_CPUS); do
-        (while true; do ((n=1+1)); done) &
-        CPU_PIDS+=($!)
-    done
+    # # Alternative method 2: Using bash arithmetic loops (uncomment if 'yes' not available)
+    # for i in $(seq 1 $NUM_CPUS); do
+    #     (while true; do ((n=1+1)); done) &
+    #     CPU_PIDS+=($!)
+    # done
     
     # Alternative method 3: Using dd (uncomment if others don't work)
     # for i in $(seq 1 $NUM_CPUS); do
