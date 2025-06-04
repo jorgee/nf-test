@@ -7,7 +7,7 @@ process Dummy {
     input: val(i)
 
     script:
-    "fifo_race.sh ${task.cpus}"
+    "fifo_race.sh"
 }
 
 workflow {
