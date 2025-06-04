@@ -8,6 +8,59 @@ set -e
 
 echo "=== Reproducing FIFO Race Condition ==="
 
+# Configuration
+NUM_CPUS=${1:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)}
+echo "Will stress $NUM_CPUS CPUs during the test"
+
+# Function to start CPU stress processes
+start_cpu_stress() {
+    echo "Starting CPU stress on $NUM_CPUS CPUs..."
+    
+    # Method 1: Using 'yes' (most portable)
+    for i in $(seq 1 $NUM_CPUS); do
+        yes > /dev/null &
+        CPU_PIDS+=($!)
+        echo "  Started CPU stress process $i (PID: ${CPU_PIDS[-1]})"
+    done
+    
+    # Alternative method 2: Using bash arithmetic loops (uncomment if 'yes' not available)
+    # for i in $(seq 1 $NUM_CPUS); do
+    #     (while true; do ((n=1+1)); done) &
+    #     CPU_PIDS+=($!)
+    # done
+    
+    # Alternative method 3: Using dd (uncomment if others don't work)
+    # for i in $(seq 1 $NUM_CPUS); do
+    #     dd if=/dev/zero of=/dev/null bs=1M count=999999999 2>/dev/null &
+    #     CPU_PIDS+=($!)
+    # done
+}
+
+# Function to stop CPU stress processes
+stop_cpu_stress() {
+    echo "Stopping CPU stress processes..."
+    for pid in "${CPU_PIDS[@]}"; do
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "  Killing CPU stress process $pid"
+            kill -TERM "$pid" 2>/dev/null || true
+        fi
+    done
+    # Give them a moment to die gracefully
+    sleep 1
+    # Force kill any remaining
+    for pid in "${CPU_PIDS[@]}"; do
+        if kill -0 "$pid" 2>/dev/null; then
+            kill -KILL "$pid" 2>/dev/null || true
+        fi
+    done
+}
+
+# Array to store CPU stress process PIDs
+CPU_PIDS=()
+
+# Start CPU stress BEFORE creating FIFOs
+start_cpu_stress
+
 # Create temporary directory (like STAR's _STARtmp)
 TMPDIR="./test_STARtmp"
 mkdir -p "$TMPDIR"
@@ -79,6 +132,13 @@ echo ""
 echo "Open file descriptors to our FIFOs:"
 lsof +D "$TMPDIR" 2>/dev/null || echo "lsof not available"
 
+echo ""
+echo "CPU usage should be high right now..."
+if command -v top >/dev/null; then
+    echo "Current CPU usage (top output for 2 seconds):"
+    timeout 2 top -l 1 2>/dev/null | head -10 || echo "Could not get CPU stats"
+fi
+
 # THE RACE CONDITION: Delete directory while processes are running
 # (This is what STAR was doing wrong)
 echo ""
@@ -108,7 +168,7 @@ echo ""
 echo "=== CLEANUP ==="
 echo "Killing processes (like STAR should have done BEFORE deleting files)..."
 
-# Clean up processes
+# Clean up FIFO processes
 for pid in $WRITER1_PID $WRITER2_PID $READER1_PID $READER2_PID; do
     if kill -0 "$pid" 2>/dev/null; then
         echo "Killing process $pid"
@@ -117,6 +177,9 @@ for pid in $WRITER1_PID $WRITER2_PID $READER1_PID $READER2_PID; do
     fi
 done
 
+# Clean up CPU stress processes
+stop_cpu_stress
+
 echo ""
 echo "=== DEMONSTRATION COMPLETE ==="
 echo "This showed the same race condition that STAR had:"
@@ -124,5 +187,9 @@ echo "1. Created directory with FIFOs"
 echo "2. Started processes using the FIFOs" 
 echo "3. Deleted directory while processes still running"
 echo "4. Processes held open file descriptors to deleted files"
+echo "5. All while stressing $NUM_CPUS CPUs to simulate heavy load"
 echo ""
 echo "The fix is to kill/wait for processes BEFORE deleting files!" 
+echo ""
+echo "Usage: $0 [num_cpus]"
+echo "  num_cpus: Number of CPUs to stress (default: auto-detect)" 
