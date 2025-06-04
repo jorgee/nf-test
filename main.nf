@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 process Dummy {
-    cpus 4
+    cpus 1
     debug true
 
     input: val(i)
