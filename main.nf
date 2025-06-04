@@ -7,7 +7,7 @@ process Dummy {
     input: val(i)
 
     script:
-    "fifo_race.sh"
+    "fifo_race.sh 4"
 }
 
 workflow {
