@@ -7,10 +7,10 @@ process Dummy {
     input: val(i)
 
     script:
-    "fifo_race.sh 8"
+    "fifo_race.sh"
 }
 
 workflow {
-    Channel.of(1..20)
+    Channel.of(1..4)
     | Dummy
 }
