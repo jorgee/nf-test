@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/Rob Syme test template//nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/foo/nextflow_schema.json",
     "title": "Rob Syme test template pipeline parameters",
     "description": "",
     "type": "object",
