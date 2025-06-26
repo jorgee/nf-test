@@ -8,6 +8,7 @@ workflow {
 
     Channel.of(params.var_i)
     | Example
+    | view { it.text }
 }   
 
 
