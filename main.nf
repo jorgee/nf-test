@@ -1,12 +1,6 @@
-nextflow.enable.dsl=2
-
-process Dummy {
-    debug true
-
-    script:
-    "echo 'Hello world!'"
-}
+include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
 
 workflow {
-    Dummy()
+    validateParameters()
+    log.info "Hello, ${params.name}!"
 }
