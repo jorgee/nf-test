@@ -15,6 +15,11 @@
                     "type": "string",
                     "default": "Eden",
                     "description": "Username"
+                },
+                "org": {
+                    "type": "string",
+                    "description": "Organisation",
+                    "default": "Seqera"
                 }
             }
         }

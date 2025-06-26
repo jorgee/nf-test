@@ -2,5 +2,5 @@ include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin
 
 workflow {
     validateParameters()
-    log.info "Hello, ${params.name}!"
+    log.info "Hello, ${params.name} from ${params.org}!"
 }
