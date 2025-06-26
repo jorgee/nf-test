@@ -13,7 +13,7 @@
             "properties": {
                 "var_i": {
                     "type": "number",
-                    "default": 1,
+                    "default": 1.0,
                     "description": "example parameter"
                 }
             }
