@@ -8,5 +8,6 @@ process Dummy {
 }
 
 workflow {
-    Dummy()
+    log.info "Hello ${params.name}"
+    // Dummy()
 }
