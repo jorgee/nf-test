@@ -4,9 +4,10 @@ process Dummy {
     debug true
 
     script:
-    "echo 'Hello world!'"
+    "echo 'Process labels: ${task.resourceLabels}'"
 }
 
 workflow {
+    log.info "Params: ${params}"
     Dummy()
 }
