@@ -15,6 +15,11 @@
                     "type": "string",
                     "default": "Rob",
                     "description": "Your name"
+                },
+                "location": {
+                    "type": "string",
+                    "description": "Your location",
+                    "default": "Montreal"
                 }
             }
         }
