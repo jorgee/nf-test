@@ -1,4 +1,4 @@
-nextflow.enable.dsl=2
+#!/usr/bin/env nextflow
 
 process Dummy {
     debug true
