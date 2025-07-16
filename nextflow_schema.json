@@ -1,0 +1,34 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com///nextflow_schema.json",
+    "title": " pipeline parameters",
+    "description": "",
+    "type": "object",
+    "$defs": {
+        "basic_options": {
+            "title": "Basic Options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "requiredFile": {
+                    "type": "string",
+                    "default": "/Users/robsyme/dev/scratch/20250716_ticket_6576_optional_files/data/example.txt",
+                    "description": "The required file"
+                },
+                "optionalFile": {
+                    "type": "string",
+                    "description": "An optional file"
+                }
+            },
+            "required": [
+                "requiredFile"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/basic_options"
+        }
+    ]
+}
