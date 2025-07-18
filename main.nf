@@ -1,12 +1,14 @@
 #!/usr/bin/env nextflow
 
 workflow {
-    if(params.optionalFile) {
-        results = RunWithBothFiles(file(params.requiredFile), file(params.optionalFile))
-    } else {
-        results = RunWithoutOptionalFile(file(params.requiredFile))
-    }
+    // if(params.optionalFile) {
+    //     results = RunWithBothFiles(file(params.requiredFile), file(params.optionalFile))
+    // } else { 
+    //     results = RunWithoutOptionalFile(file(params.requiredFile))
+    // }
 
+    optional = params.optionalFile ? file(params.optionalFile) : []
+    results = RunWithBothFiles(file(params.requiredFile), optional)
     results.view()
 }
 
