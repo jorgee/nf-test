@@ -7,8 +7,16 @@ workflow {
     //     results = RunWithoutOptionalFile(file(params.requiredFile))
     // }
 
-    optional = params.optionalFile ? file(params.optionalFile) : []
-    results = RunWithBothFiles(file(params.requiredFile), optional)
+    // optional = params.optionalFile ? file(params.optionalFile) : []
+    // results = RunWithBothFiles(file(params.requiredFile), optional)
+
+
+    // optional = Channel.fromPath(params.optionalFile).ifEmpty([])
+    // optional = params.optionalFile ? file(params.optionalFile) : []
+
+    results = RunWithBothFiles(file(params.requiredFile), params.optionalFile)
+
+
     results.view()
 }
 
