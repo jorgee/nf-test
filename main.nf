@@ -1,5 +1,5 @@
 #!/usr/bin/env nextflow
 
 workflow {
-    log.info "Found params: ${params}"
+    log.info "Found params: ${params}!"
 }
