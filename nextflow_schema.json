@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/Rob Syme test template//nextflow_schema.json",
+    "title": "Rob Syme test template pipeline parameters",
+    "description": "",
+    "type": "object",
+    "definitions": {
+        "basic_params": {
+            "title": "Basic params",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "default": "Rob"
+                },
+                "location": {
+                    "type": "string",
+                    "default": "Montreal"
+                }
+            },
+            "required": [
+                "name",
+                "location"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/basic_params"
+        }
+    ]
+}
