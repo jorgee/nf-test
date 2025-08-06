@@ -5,7 +5,7 @@ process Dummy {
     debug true
 
     script:
-    "echo 'Found secret: \${one}'"
+    "echo \"Found secret: \${one}\""
 }
 
 workflow {
