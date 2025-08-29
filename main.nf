@@ -6,7 +6,7 @@ process UseLock {
 
 process TestLock {
     debug true
-    script: "test-locks.py"
+    script: "test-locks.py ."
 }
 
 workflow {
