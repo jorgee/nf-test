@@ -11,4 +11,5 @@ process TestLock {
 
 workflow {
     TestLock()
+    UseLock()
 }
