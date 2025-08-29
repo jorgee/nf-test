@@ -1,12 +1,10 @@
 #!/usr/bin/env nextflow
 
-process Dummy {
+process UseLock {
     debug true
-
-    script:
-    "echo 'Hello world!'"
+    script: "use_lock.py"
 }
 
 workflow {
-    Dummy()
+    UseLock()
 }
