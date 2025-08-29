@@ -1,17 +1,28 @@
 #!/usr/bin/env python3
 
-import logging
 import os
 import sys
 import time
 import signal
 import fcntl
 
+# Global variable to hold the file handle
+locked_file = None
+
 def signal_handler(signum, frame):
     print(f"Received signal {signum}, shutting down...")
+    if locked_file:
+        try:
+            fcntl.flock(locked_file, fcntl.LOCK_UN)
+            locked_file.close()
+            print("File lock released")
+        except:
+            pass
     sys.exit(0)
 
 def main():
+    global locked_file
+    
     # Set up signal handler for graceful shutdown
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
@@ -21,44 +32,60 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    # Set up logging to simulate IsoQuant's behavior
+    # Create and hold an exclusive file lock
     log_file = os.path.join(output_dir, "isoquant.log")
     
-    # Create file handler - this creates the file lock
-    print(f"Creating log file with lock: {log_file}")
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.INFO)
-    
-    # Set up logger
-    logger = logging.getLogger('TestLogger')
-    logger.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    
-    # Write initial message
-    logger.info("Starting simulation of IsoQuant file locking behavior")
-    logger.info("This process will hold a file lock on the log file")
-    
-    print("Log file created and locked. Process will continuously write to log...")
-    print("Writing every 0.1 seconds to maximize lock collision probability")
-    print("You can interrupt with Ctrl+C or send SIGTERM")
-    
-    counter = 0
-    start_time = time.time()
+    print(f"Creating and locking file: {log_file}")
     
     try:
-        # Run for 24 hours, writing continuously to increase lock collision
+        # Open file for writing
+        locked_file = open(log_file, 'w')
+        
+        # Acquire exclusive lock (blocking)
+        fcntl.flock(locked_file, fcntl.LOCK_EX)
+        
+        print("EXCLUSIVE FILE LOCK ACQUIRED AND HELD")
+        print("This file lock will be held for 24 hours or until interrupted")
+        print("CRIU should detect this lock and fail the dump")
+        print("You can interrupt with Ctrl+C or send SIGTERM")
+        
+        # Write initial content
+        locked_file.write("Starting simulation of IsoQuant file locking behavior\n")
+        locked_file.write("This file is locked with fcntl.LOCK_EX\n")
+        locked_file.flush()
+        
+        start_time = time.time()
+        counter = 0
+        
+        # Hold the lock for 24 hours, periodically writing
         while time.time() - start_time < 86400:  # 24 hours
             counter += 1
-            # Write frequently to keep file lock active
-            logger.info(f"Active logging iteration {counter}, elapsed: {time.time() - start_time:.1f}s")
             
-            # Small sleep to avoid excessive CPU usage but maintain frequent writes
-            time.sleep(0.1)  # 10 writes per second
+            # Write to locked file periodically (every 10 seconds)
+            if counter % 100 == 0:  # Every 10 seconds at 0.1s intervals
+                elapsed = time.time() - start_time
+                locked_file.write(f"Lock still held at iteration {counter}, elapsed: {elapsed:.1f}s\n")
+                locked_file.flush()  # Ensure write while lock is held
+                print(f"Lock held for {elapsed:.1f}s (iteration {counter})")
+            
+            time.sleep(0.1)  # Check every 0.1 seconds
             
     except KeyboardInterrupt:
         print("Interrupted by user")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Clean up - release lock
+        if locked_file:
+            try:
+                locked_file.write("Process ending, releasing file lock\n")
+                locked_file.flush()
+                fcntl.flock(locked_file, fcntl.LOCK_UN)
+                locked_file.close()
+                print("File lock released and file closed")
+            except Exception as e:
+                print(f"Error during cleanup: {e}")
     
-    logger.info("Process ending, file lock will be released")
     print("Process complete")
 
 if __name__ == "__main__":
