@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nested Object Test Pipeline",
+  "description": "A minimal pipeline to demonstrate nested object parameter handling (ticket #6870)",
+  "type": "object",
+  "$defs": {
+    "sample_input": {
+      "title": "Sample Input",
+      "type": "object",
+      "description": "Sample configuration - mimics cellranger_multi's param_list behavior",
+      "properties": {
+        "param_list": {
+          "type": "string",
+          "description": "Dataset input as a CSV file path or direct parameter. In practice, users may pass an array of objects with nested properties.",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "output_options": {
+      "title": "Output Options",
+      "type": "object",
+      "description": "Output configuration",
+      "properties": {
+        "output_dir": {
+          "type": "string",
+          "description": "Output directory for results",
+          "default": "results"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/sample_input"
+    },
+    {
+      "$ref": "#/$defs/output_options"
+    }
+  ]
+}

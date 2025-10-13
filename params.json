@@ -1,0 +1,23 @@
+{
+  "param_list": [
+    {
+      "id": "sample1",
+      "input": [
+        "sample1_S1_L001_R1_001.fastq.gz",
+        "sample1_S1_L001_R2_001.fastq.gz"
+      ],
+      "library_type": "Gene Expression",
+      "library_id": "GEX_sample1"
+    },
+    {
+      "id": "sample2",
+      "input": [
+        "sample2_S1_L001_R1_001.fastq.gz",
+        "sample2_S1_L001_R2_001.fastq.gz"
+      ],
+      "library_type": "VDJ",
+      "library_id": "VDJ_sample2"
+    }
+  ],
+  "output_dir": "results/test_run"
+}
