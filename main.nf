@@ -8,5 +8,5 @@ process Dummy {
 }
 
 workflow {
-    log,info "Found params: ${params}"
+    log.info "Found params: ${params}"
 }
