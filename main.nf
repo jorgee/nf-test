@@ -1,12 +1,19 @@
-#!/usr/bin/env nextflow
+process LS {
 
-process Dummy {
-    debug true
+input: 
+path input_path
 
-    script:
-    "echo 'Hello world!'"
+output:
+path("output.txt")
+
+script:
+"""
+ls -l $input_path > output.txt
+"""
 }
 
-workflow {
-    Dummy()
+workflow{
+
+Channel.fromPath("s3://ncbi-blast-databases/2025-09-16-01-05-02/tsa_nt.02.nhi") | LS
+
 }
