@@ -4,7 +4,7 @@ process Dummy {
     debug true
 
     script:
-    "echo 'Hello world Modified 2!'"
+    "echo 'Hello world Modified 3!'"
 }
 
 workflow {
