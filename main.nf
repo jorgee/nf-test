@@ -8,6 +8,7 @@ path("output.txt")
 
 script:
 """
+echo listing $input_path
 ls -l $input_path > output.txt
 """
 }
