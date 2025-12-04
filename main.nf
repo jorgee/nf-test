@@ -5,12 +5,12 @@ val id
 path input_path
 
 output:
-path("output.txt")
+path("output*.txt")
 
 script:
 """
-echo listing $input_path
-ls -l $input_path > output.txt
+echo listing ${input_path]
+ls -l ${input_path} > output_${id}.txt
 """
 }
 
