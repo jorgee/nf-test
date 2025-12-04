@@ -1,6 +1,7 @@
 process LS {
 
-input: 
+input:
+val id
 path input_path
 
 output:
@@ -14,7 +15,5 @@ ls -l $input_path > output.txt
 }
 
 workflow{
-
-Channel.fromPath("s3://ngi-igenomes/igenomes/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index/") | LS
-
+   LS(Channel.of(1..65), file("s3://ngi-igenomes/igenomes/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index/"))
 }
