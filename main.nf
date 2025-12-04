@@ -15,6 +15,6 @@ ls -l $input_path > output.txt
 
 workflow{
 
-Channel.fromPath("s3://ncbi-blast-databases/2025-09-16-01-05-02/tsa_nt.02.nhi") | LS
+Channel.fromPath("s3://ngi-igenomes/igenomes/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index/") | LS
 
 }
