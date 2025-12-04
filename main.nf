@@ -12,6 +12,7 @@ path("output*.txt")
 script:
 """
 echo listing ${input_path}
+echo $PWD
 ls -l ${input_path} > output_${id}.txt
 """
 }
