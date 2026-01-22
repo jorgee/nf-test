@@ -7,6 +7,8 @@ process Dummy_failed {
 
     input:
 	val(i)
+    path:
+	path(*.txt)
     script:
     "echo 'Hello fail $i!'; sleep 10; exit 3"
 }
@@ -18,10 +20,10 @@ process Dummy_success {
     input:
         val(i)
     script:
-    "echo 'Hello fail $i!'"
+    "echo 'Hello success $i!'"
 }
 
 workflow {
-    Dummy_success(Channel.from(0..50))
-    Dummy_failed(Channel.from(0..50))
+    Dummy_success(Channel.from(0..200))
+    Dummy_failed(Channel.from(0..2))
 }
