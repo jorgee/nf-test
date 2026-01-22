@@ -7,7 +7,7 @@ process Dummy_failed {
 
     input:
 	val(i)
-    path:
+    output:
 	path(*.txt)
     script:
     "echo 'Hello fail $i!'; sleep 10; exit 3"
