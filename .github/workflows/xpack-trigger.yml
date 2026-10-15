@@ -21,4 +21,6 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          gh workflow run nextflow-compat.yml -R jorgee-tests-labs/priv-repo-test -f pr="$PR" -f sha="$SHA"
+          # REST call, not `gh workflow run`: that also looks up the default branch, which needs Contents: read.
+          gh api repos/jorgee-tests-labs/priv-repo-test/actions/workflows/nextflow-compat.yml/dispatches \
+            -f ref=main -f "inputs[pr]=$PR" -f "inputs[sha]=$SHA"
