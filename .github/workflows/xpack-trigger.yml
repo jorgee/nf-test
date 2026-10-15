@@ -1,12 +1,17 @@
-name: xpack compat trigger
+name: xpack compat
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
 permissions: {}
+# A new push cancels the wait for the previous commit.
+concurrency:
+  group: xpack-compat-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 jobs:
-  trigger:
+  xpack-compat:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/create-github-app-token@v1
         id: app
@@ -20,7 +25,25 @@ jobs:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           PR: ${{ github.event.pull_request.number }}
           SHA: ${{ github.event.pull_request.head.sha }}
+          ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
+          repo=repos/jorgee-tests-labs/priv-repo-test
+          wf=$repo/actions/workflows/nextflow-compat.yml
           # REST call, not `gh workflow run`: that also looks up the default branch, which needs Contents: read.
-          gh api repos/jorgee-tests-labs/priv-repo-test/actions/workflows/nextflow-compat.yml/dispatches \
-            -f ref=main -f "inputs[pr]=$PR" -f "inputs[sha]=$SHA"
+          gh api $wf/dispatches -f ref=main -f "inputs[pr]=$PR" -f "inputs[sha]=$SHA" -f "inputs[id]=$ID"
+
+          # The dispatch API returns no run id, so find the run by the id in its name.
+          until run=$(gh api "$wf/runs?event=workflow_dispatch&per_page=20" \
+              -q ".workflow_runs[] | select(.display_title | endswith(\"[$ID]\")) | .id") && [ -n "$run" ]; do
+            sleep 5
+          done
+          echo "Waiting for the xpack check"
+          until [ "$(gh api $repo/actions/runs/$run -q .status)" = completed ]; do sleep 30; done
+
+          # Only the conclusion is printed: the xpack logs are private.
+          conclusion=$(gh api $repo/actions/runs/$run -q .conclusion)
+          if [ "$conclusion" != success ]; then
+            echo "::error::May break xpack ($conclusion). Ask the Seqera team before merging."
+            exit 1
+          fi
+          echo "No xpack break found"
