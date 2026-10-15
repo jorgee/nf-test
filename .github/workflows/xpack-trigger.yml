@@ -1,0 +1,24 @@
+name: xpack compat trigger
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions: {}
+jobs:
+  trigger:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app
+        with:
+          app-id: ${{ vars.PRIV_TRIGGER_APP_ID }}
+          private-key: ${{ secrets.PRIV_TRIGGER_APP_KEY }}
+          owner: jorgee-tests-labs
+          repositories: priv-repo-test
+      # Never check out PR code here: this job holds a secret.
+      - env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          gh workflow run nextflow-compat.yml -R jorgee-tests-labs/priv-repo-test -f pr="$PR" -f sha="$SHA"
