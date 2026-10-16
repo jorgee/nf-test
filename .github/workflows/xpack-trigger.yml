@@ -62,7 +62,7 @@ jobs:
             echo "conclusion=neutral" >> "$GITHUB_OUTPUT"
             echo "title=Not checked: a maintainer must add the xpack-check label and re-run the build" >> "$GITHUB_OUTPUT"
           else
-            echo "conclusion=neutral" >> "$GITHUB_OUTPUT"
+            echo "conclusion=failure" >> "$GITHUB_OUTPUT"
             echo "title=May break xpack. Ask the Seqera team before merging." >> "$GITHUB_OUTPUT"
           fi
 
