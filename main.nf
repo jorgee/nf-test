@@ -10,3 +10,4 @@ process Dummy {
 workflow {
     Dummy()
 }
+// xpack compat test
